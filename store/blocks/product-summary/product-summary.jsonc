@@ -14,8 +14,7 @@
   "flex-layout.col#productRating": {
     "props": {
       "blockClass": "productRating"
-    },
-    "children": ["product-rating-inline"]
+    }
   },
 
   "stack-layout#prodsum": {

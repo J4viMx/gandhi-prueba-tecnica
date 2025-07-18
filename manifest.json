@@ -1,12 +1,13 @@
 {
-  "vendor": "vtex",
-  "name": "store-theme",
-  "version": "5.2.0",
+  "vendor": "gandhiqa",
+  "name": "javier-juarez",
+  "version": "0.0.1",
   "builders": {
     "styles": "2.x",
     "store": "0.x",
     "sitemap": "0.x",
-    "docs": "0.x"
+    "docs": "0.x",
+    "react": "3.x"
   },
   "mustUpdateAt": "2018-09-05",
   "scripts": {
@@ -40,7 +41,6 @@
     "vtex.product-customizer": "2.x",
     "vtex.stack-layout": "0.x",
     "vtex.product-specification-badges": "0.x",
-    "vtex.product-review-interfaces": "1.x",
     "vtex.telemarketing": "2.x",
     "vtex.order-placed": "2.x",
     "vtex.checkout-summary": "0.x",
@@ -62,10 +62,8 @@
     "vtex.product-specifications": "1.x",
     "vtex.tab-layout": "0.x",
     "vtex.condition-layout": "2.x",
-    "vtex.css-handles": "1.x"
-  },
-  "peerDependencies": {
-    "vtex.reviews-and-ratings": "3.x"
+    "vtex.css-handles": "1.x",
+    "vtex.order-items": "0.x"
   },
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
 }

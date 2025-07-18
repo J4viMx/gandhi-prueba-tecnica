@@ -23,16 +23,16 @@
     "blocks": ["login-content#default"]
   },
 
+  "store.custom#novedades": {
+    "blocks": ["newArrivals"]
+  },
+
   "login-content#default": {
     "props": {
       "isInitialScreenOptionOnly": false,
       "defaultOption": 1,
       "showPasswordVerificationIntoTooltip": true
     }
-  },
-
-  "store.product-review-form": {
-    "blocks": ["product-review-form"]
   },
 
   "store.not-found#product": {
