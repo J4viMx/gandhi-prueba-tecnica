@@ -23,7 +23,7 @@
     "blocks": ["login-content#default"]
   },
 
-  "store.custom#novedades": {
+  "store.custom#sugerencias-mes": {
     "blocks": ["newArrivals", "suggestions"]
   },
 
