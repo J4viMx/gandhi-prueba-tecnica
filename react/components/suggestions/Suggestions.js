@@ -1,50 +1,46 @@
-/* import React from "react";
+import React, { useEffect, useState } from "react";
+import { useCssHandles } from "vtex.css-handles";
+import "./index.css";
+
+const CSS_HANDLES = [
+  "section",
+  "recommendationsContainer",
+  "formContainer",
+  "recommendationForm",
+  "formGroup",
+  "submitBtn",
+  "recommendationsList",
+  "recommendationCard",
+  "recommendationHeader",
+  "stars",
+  "bookRecommended",
+  "email",
+  "pagination",
+  "paginationBtn",
+  "pageInfo",
+  "filled",
+  "star",
+];
 
 const Suggestions = () => {
+  const { handles } = useCssHandles(CSS_HANDLES);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    book: "",
-    stars: 5,
+    Autor: "",
+    Email: "",
+    Libro: "",
+    Estrellas: 5,
   });
   const [recommendationsPage, setRecommendationsPage] = useState(1);
-  const [recommendations, setRecommendations] = useState([
-    {
-      id: 1,
-      name: "María García",
-      email: "maria@email.com",
-      book: "El Nombre del Viento",
-      stars: 5,
-    },
-    {
-      id: 2,
-      name: "Juan Pérez",
-      email: "juan@email.com",
-      book: "1984",
-      stars: 4,
-    },
-    {
-      id: 3,
-      name: "Ana López",
-      email: "ana@email.com",
-      book: "Cien Años de Soledad",
-      stars: 5,
-    },
-    {
-      id: 4,
-      name: "Carlos Ruiz",
-      email: "carlos@email.com",
-      book: "El Principito",
-      stars: 4,
-    },
-    {
-      id: 5,
-      name: "Laura Martín",
-      email: "laura@email.com",
-      book: "Harry Potter",
-      stars: 5,
-    },
-  ]);
+  const [recommendations, setRecommendations] = useState([]);
+
+  const fetchRecommendations = async () => {
+    const response = await fetch(
+      "/api/dataentities/RC/search?_fields=Libro,Autor,Email,Estrellas,id&_sort=createdIn DESC"
+    );
+    const data = await response.json();
+    console.log(data, "datata");
+    setRecommendations(data);
+  };
 
   const recommendationsPerPage = 3;
   const totalRecommendationPages = Math.ceil(
@@ -56,77 +52,103 @@ const Suggestions = () => {
     recommendationsPage * recommendationsPerPage
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newRecommendation = {
-      id: recommendations.length + 1,
       ...formData,
     };
-    setRecommendations([newRecommendation, ...recommendations]);
-    setFormData({ name: "", email: "", book: "", stars: 5 });
+    setFormData({ Autor: "", Email: "", Libro: "", Estrellas: 5 });
+
+    const response = await fetch("/api/dataentities/RC/documents", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newRecommendation),
+    });
+
+    const result = await response.json();
+
+    setRecommendations((prev) => [
+      { id: result.Id, ...newRecommendation },
+      ...prev,
+    ]);
   };
 
+  console.log(recommendations, "recommendationssss");
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className={i < rating ? "star filled" : "star"}>
+      <span
+        key={i}
+        className={
+          i < rating ? `${handles.star} ${handles.filled}` : handles.star
+        }
+      >
         ★
       </span>
     ));
   };
 
+  useEffect(() => {
+    fetchRecommendations();
+  }, []);
+
   return (
-    <section className="section">
+    <section className={handles.section}>
       <h2>Recomendaciones</h2>
-      <div className="recommendations-container">
-        <div className="form-container">
+      <div className={handles.recommendationsContainer}>
+        <div className={handles.formContainer}>
           <h3>Deja tu recomendación</h3>
-          <form onSubmit={handleSubmit} className="recommendation-form">
-            <div className="form-group">
-              <label htmlFor="name">Nombre:</label>
+          <form onSubmit={handleSubmit} className={handles.recommendationForm}>
+            <div className={handles.formGroup}>
+              <label htmlFor="Autor">Nombre:</label>
               <input
                 type="text"
-                id="name"
-                value={formData.name}
+                id="Autor"
+                value={formData.Autor}
                 onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
+                  setFormData({ ...formData, Autor: e.target.value })
                 }
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="email">Email:</label>
+            <div className={handles.formGroup}>
+              <label htmlFor="Email">Email:</label>
               <input
                 type="email"
-                id="email"
-                value={formData.email}
+                id="Email"
+                value={formData.Email}
                 onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
+                  setFormData({ ...formData, Email: e.target.value })
                 }
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="book">Libro:</label>
+            <div className={handles.formGroup}>
+              <label htmlFor="Libro">Libro:</label>
               <input
                 type="text"
-                id="book"
-                value={formData.book}
+                id="Libro"
+                value={formData.Libro}
                 onChange={(e) =>
-                  setFormData({ ...formData, book: e.target.value })
+                  setFormData({ ...formData, Libro: e.target.value })
                 }
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="stars">Estrellas:</label>
+            <div className={handles.formGroup}>
+              <label htmlFor="Estrellas">Estrellas:</label>
               <select
-                id="stars"
-                value={formData.stars}
+                id="Estrellas"
+                value={formData.Estrellas}
                 onChange={(e) =>
-                  setFormData({ ...formData, stars: Number(e.target.value) })
+                  setFormData({
+                    ...formData,
+                    Estrellas: Number(e.target.value),
+                  })
                 }
               >
                 {[1, 2, 3, 4, 5].map((num) => (
@@ -137,36 +159,38 @@ const Suggestions = () => {
               </select>
             </div>
 
-            <button type="submit" className="submit-btn">
+            <button type="submit" className={handles.submitBtn}>
               Enviar Recomendación
             </button>
           </form>
         </div>
 
-        <div className="recommendations-list">
+        <div className={handles.recommendationsList}>
           <h3>Recomendaciones recientes</h3>
           {paginatedRecommendations.map((rec) => (
-            <div key={rec.id} className="recommendation-card">
-              <div className="recommendation-header">
-                <strong>{rec.name}</strong>
-                <div className="stars">{renderStars(rec.stars)}</div>
+            <div key={rec.id} className={handles.recommendationCard}>
+              <div className={handles.recommendationHeader}>
+                <strong>{rec.Autor}</strong>
+                <div className={handles.stars}>
+                  {renderStars(rec.Estrellas)}
+                </div>
               </div>
-              <p className="book-recommended">"{rec.book}"</p>
-              <small className="email">{rec.email}</small>
+              <p className={handles.bookRecommended}>"{rec.Libro}"</p>
+              <small className={handles.email}>{rec.Email}</small>
             </div>
           ))}
 
-          <div className="pagination">
+          <div className={handles.pagination}>
             <button
               onClick={() =>
                 setRecommendationsPage((prev) => Math.max(prev - 1, 1))
               }
               disabled={recommendationsPage === 1}
-              className="pagination-btn"
+              className={handles.paginationBtn}
             >
               Anterior
             </button>
-            <span className="page-info">
+            <span className={handles.pageInfo}>
               Página {recommendationsPage} de {totalRecommendationPages}
             </span>
             <button
@@ -176,7 +200,7 @@ const Suggestions = () => {
                 )
               }
               disabled={recommendationsPage === totalRecommendationPages}
-              className="pagination-btn"
+              className={handles.paginationBtn}
             >
               Siguiente
             </button>
@@ -187,4 +211,4 @@ const Suggestions = () => {
   );
 };
 
-export default Suggestions; */
+export default Suggestions;

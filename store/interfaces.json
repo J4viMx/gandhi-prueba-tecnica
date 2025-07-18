@@ -1,5 +1,8 @@
 {
     "newArrivals": {
         "component": "NewArrivalsWrapper"
+    },
+    "suggestions": {
+        "component": "SuggestionsWrapper"
     }
 }

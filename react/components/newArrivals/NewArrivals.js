@@ -46,7 +46,7 @@ const NewArrivals = () => {
   const { addItem } = useOrderItems();
 
   const { handles } = useCssHandles(CSS_HANDLES);
-  const booksPerPage = 4;
+  const booksPerPage = 3;
 
   const currentBooks = products;
   const totalPages = Math.ceil(currentBooks.length / booksPerPage);
