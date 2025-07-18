@@ -46,6 +46,8 @@ const NewArrivals = () => {
   const [products, setProducts] = useState([]);
   const [activeTab, setActiveTab] = useState("138");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [loadingAddCart, setLoadingAddCart] = useState(false);
 
   const { addItem } = useOrderItems();
 
@@ -66,6 +68,7 @@ const NewArrivals = () => {
   };
 
   const handleAddToCart = (product) => {
+    setLoadingAddCart(true);
     if (!product.items || product.items.length === 0) {
       return;
     }
@@ -89,16 +92,29 @@ const NewArrivals = () => {
       })
       .catch((err) => {
         console.error("Error al agregar al carrito:", err);
+      })
+      .finally(() => {
+        setLoadingAddCart(false);
       });
   };
 
+  const getProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/catalog_system/pub/products/search?fq=productClusterIds:${activeTab}`
+      );
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching collection", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch(
-      `/api/catalog_system/pub/products/search?fq=productClusterIds:${activeTab}`
-    )
-      .then((response) => response.json())
-      .then((data) => setProducts(data))
-      .catch((error) => console.error("Error fetching collection", error));
+    getProducts();
   }, [activeTab]);
 
   return (
@@ -127,55 +143,65 @@ const NewArrivals = () => {
         <h2>
           Novedades de {buttonOptions.find((tab) => tab.id === activeTab).label}
         </h2>
-        <div className={handles.booksGrid}>
-          {paginatedBooks.map((book) => (
-            <div
-              key={book.id}
-              className={`${handles.bookCard} ${handles.relative}`}
-            >
-              <div className={handles.tag}>
-                {book?.productClusters?.[activeTab]}
-              </div>
-              <img
-                src={book.items?.[0].images?.[0].imageUrl || "/placeholder.svg"}
-                alt={book.productName}
-                className={handles.bookCover}
-              />
-              <h3 className={handles.bookTitle}>{book.productName}</h3>
-              <p className={handles.bookPrice}>
-                ${book.items?.[0].sellers?.[0].commertialOffer?.Price}
-              </p>
-              <button
-                className={handles.paginationBtn}
-                onClick={() => handleAddToCart(book)}
+        {paginatedBooks?.length === 0 && <NoResults />}
+        {loading ? (
+          <Loader />
+        ) : (
+          <div className={handles.booksGrid}>
+            {paginatedBooks.map((book) => (
+              <div
+                key={book.id}
+                className={`${handles.bookCard} ${handles.relative}`}
               >
-                Agregar al carrito
-              </button>
-            </div>
-          ))}
-        </div>
+                <div className={handles.tag}>
+                  {book?.productClusters?.[activeTab]}
+                </div>
+                <img
+                  src={
+                    book.items?.[0].images?.[0].imageUrl || "/placeholder.svg"
+                  }
+                  alt={book.productName}
+                  className={handles.bookCover}
+                />
+                <h3 className={handles.bookTitle}>{book.productName}</h3>
+                <p className={handles.bookPrice}>
+                  ${book.items?.[0].sellers?.[0].commertialOffer?.Price}
+                </p>
+                <button
+                  className={handles.paginationBtn}
+                  onClick={() => handleAddToCart(book)}
+                  disabled={loadingAddCart}
+                >
+                  Agregar al carrito
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
-        <div className={handles.pagination}>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className={handles.paginationBtn}
-          >
-            Anterior
-          </button>
-          <span className={handles.pageInfo}>
-            Página {currentPage} de {totalPages}
-          </span>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-            className={handles.paginationBtn}
-          >
-            Siguiente
-          </button>
-        </div>
+        {!!paginatedBooks.length && (
+          <div className={handles.pagination}>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={handles.paginationBtn}
+            >
+              Anterior
+            </button>
+            <span className={handles.pageInfo}>
+              Página {currentPage} de {totalPages}
+            </span>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className={handles.paginationBtn}
+            >
+              Siguiente
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

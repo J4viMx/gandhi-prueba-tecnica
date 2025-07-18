@@ -2,12 +2,12 @@ import React from "react";
 import { useCssHandles } from "vtex.css-handles";
 import "./index.css";
 
-const CSS_HANDLES = ["loader", "loading"];
+const CSS_HANDLES = ["loader", "loading", "containerLoader"];
 
 const Loader = () => {
   const { handles } = useCssHandles(CSS_HANDLES);
   return (
-    <>
+    <div className={handles.containerLoader}>
       <div className={handles.loader}>
         <div>
           <ul>
@@ -45,7 +45,7 @@ const Loader = () => {
         </div>
         <span className={handles.loading}>Cargando</span>
       </div>
-    </>
+    </div>
   );
 };
 

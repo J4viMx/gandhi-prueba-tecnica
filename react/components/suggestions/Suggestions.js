@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useCssHandles } from "vtex.css-handles";
 import "./index.css";
+import Loader from "../Loader/Loader";
+import NoResults from "../No-results/NoResults";
 
 const CSS_HANDLES = [
   "section",
@@ -32,14 +34,21 @@ const Suggestions = () => {
   });
   const [recommendationsPage, setRecommendationsPage] = useState(1);
   const [recommendations, setRecommendations] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchRecommendations = async () => {
-    const response = await fetch(
-      "/api/dataentities/RC/search?_fields=Libro,Autor,Email,Estrellas,id&_sort=createdIn DESC"
-    );
-    const data = await response.json();
-    console.log(data, "datata");
-    setRecommendations(data);
+    try {
+      setLoading(true);
+      const response = await fetch(
+        "/api/dataentities/RC/search?_fields=Libro,Autor,Email,Estrellas,id&_sort=createdIn DESC"
+      );
+      const data = await response.json();
+      setRecommendations(data);
+    } catch (error) {
+      console.error("Error fetching recommendations", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const recommendationsPerPage = 3;
@@ -59,23 +68,29 @@ const Suggestions = () => {
     };
     setFormData({ Autor: "", Email: "", Libro: "", Estrellas: 5 });
 
-    const response = await fetch("/api/dataentities/RC/documents", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newRecommendation),
-    });
+    try {
+      setLoading(true);
+      const response = await fetch("/api/dataentities/RC/documents", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newRecommendation),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    setRecommendations((prev) => [
-      { id: result.Id, ...newRecommendation },
-      ...prev,
-    ]);
+      setRecommendations((prev) => [
+        { id: result.Id, ...newRecommendation },
+        ...prev,
+      ]);
+    } catch (error) {
+      console.error("Error adding recommendation", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  console.log(recommendations, "recommendationssss");
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span
@@ -159,7 +174,11 @@ const Suggestions = () => {
               </select>
             </div>
 
-            <button type="submit" className={handles.submitBtn}>
+            <button
+              type="submit"
+              className={handles.submitBtn}
+              disabled={loading}
+            >
               Enviar Recomendación
             </button>
           </form>
@@ -167,44 +186,51 @@ const Suggestions = () => {
 
         <div className={handles.recommendationsList}>
           <h3>Recomendaciones recientes</h3>
-          {paginatedRecommendations.map((rec) => (
-            <div key={rec.id} className={handles.recommendationCard}>
-              <div className={handles.recommendationHeader}>
-                <strong>{rec.Autor}</strong>
-                <div className={handles.stars}>
-                  {renderStars(rec.Estrellas)}
+          {recommendations?.length === 0 && <NoResults />}
+          {loading ? (
+            <Loader />
+          ) : (
+            paginatedRecommendations.map((rec) => (
+              <div key={rec.id} className={handles.recommendationCard}>
+                <div className={handles.recommendationHeader}>
+                  <strong>{rec.Autor}</strong>
+                  <div className={handles.stars}>
+                    {renderStars(rec.Estrellas)}
+                  </div>
                 </div>
+                <p className={handles.bookRecommended}>"{rec.Libro}"</p>
+                <small className={handles.email}>{rec.Email}</small>
               </div>
-              <p className={handles.bookRecommended}>"{rec.Libro}"</p>
-              <small className={handles.email}>{rec.Email}</small>
-            </div>
-          ))}
+            ))
+          )}
 
-          <div className={handles.pagination}>
-            <button
-              onClick={() =>
-                setRecommendationsPage((prev) => Math.max(prev - 1, 1))
-              }
-              disabled={recommendationsPage === 1}
-              className={handles.paginationBtn}
-            >
-              Anterior
-            </button>
-            <span className={handles.pageInfo}>
-              Página {recommendationsPage} de {totalRecommendationPages}
-            </span>
-            <button
-              onClick={() =>
-                setRecommendationsPage((prev) =>
-                  Math.min(prev + 1, totalRecommendationPages)
-                )
-              }
-              disabled={recommendationsPage === totalRecommendationPages}
-              className={handles.paginationBtn}
-            >
-              Siguiente
-            </button>
-          </div>
+          {!!recommendations.length && (
+            <div className={handles.pagination}>
+              <button
+                onClick={() =>
+                  setRecommendationsPage((prev) => Math.max(prev - 1, 1))
+                }
+                disabled={recommendationsPage === 1}
+                className={handles.paginationBtn}
+              >
+                Anterior
+              </button>
+              <span className={handles.pageInfo}>
+                Página {recommendationsPage} de {totalRecommendationPages}
+              </span>
+              <button
+                onClick={() =>
+                  setRecommendationsPage((prev) =>
+                    Math.min(prev + 1, totalRecommendationPages)
+                  )
+                }
+                disabled={recommendationsPage === totalRecommendationPages}
+                className={handles.paginationBtn}
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>

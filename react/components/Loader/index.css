@@ -301,3 +301,10 @@
   color: #6c2684;
   font-weight: bold;
 }
+.containerLoader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 40vh;
+}
