@@ -5,6 +5,7 @@ import { useOrderItems } from "vtex.order-items/OrderItems";
 import Card from "./Card";
 import "./index.css";
 import Loader from "../Loader/Loader";
+import NoResults from "../No-results/NoResults";
 
 const CSS_HANDLES = [
   "container",

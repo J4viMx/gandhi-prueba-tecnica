@@ -1,0 +1,30 @@
+.containerNoResults {
+  min-width: 220px;
+  width: 100%;
+  max-width: 1000px;
+  height: 350px;
+  margin: 50px auto;
+  border-radius: 5px;
+}
+
+.noResult {
+  width: 100%;
+  height: 100%;
+  background-image: url("https://cdn-icons-png.flaticon.com/512/6134/6134065.png");
+  background-repeat: no-repeat;
+  background-size: 200px;
+  background-position: 50% 40%;
+  position: relative;
+
+  &::after {
+    content: "No hay resultados";
+    font-size: 2rem;
+    font-family: Sans-serif;
+    font-weight: bold;
+    color: #6c2684;
+    position: absolute;
+    width: 100%;
+    bottom: 10%;
+    text-align: center;
+  }
+}
