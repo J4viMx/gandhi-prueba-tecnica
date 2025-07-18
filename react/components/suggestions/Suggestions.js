@@ -34,7 +34,7 @@ const Suggestions = () => {
   });
   const [recommendationsPage, setRecommendationsPage] = useState(1);
   const [recommendations, setRecommendations] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchRecommendations = async () => {
     try {
@@ -186,7 +186,7 @@ const Suggestions = () => {
 
         <div className={handles.recommendationsList}>
           <h3>Recomendaciones recientes</h3>
-          {recommendations?.length === 0 && <NoResults />}
+          {recommendations?.length === 0 && !loading && <NoResults />}
           {loading ? (
             <Loader />
           ) : (

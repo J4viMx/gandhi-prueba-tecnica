@@ -46,7 +46,7 @@ const NewArrivals = () => {
   const [products, setProducts] = useState([]);
   const [activeTab, setActiveTab] = useState("138");
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadingAddCart, setLoadingAddCart] = useState(false);
 
   const { addItem } = useOrderItems();
@@ -143,7 +143,7 @@ const NewArrivals = () => {
         <h2>
           Novedades de {buttonOptions.find((tab) => tab.id === activeTab).label}
         </h2>
-        {paginatedBooks?.length === 0 && <NoResults />}
+        {paginatedBooks?.length === 0 && !loading && <NoResults />}
         {loading ? (
           <Loader />
         ) : (
