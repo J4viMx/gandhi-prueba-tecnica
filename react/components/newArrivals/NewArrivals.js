@@ -4,6 +4,7 @@ import { useCssHandles } from "vtex.css-handles";
 import { useOrderItems } from "vtex.order-items/OrderItems";
 import Card from "./Card";
 import "./index.css";
+import Loader from "../Loader/Loader";
 
 const CSS_HANDLES = [
   "container",
@@ -21,6 +22,8 @@ const CSS_HANDLES = [
   "pageInfo",
   "booksGrid",
   "bookPrice",
+  "relative",
+  "tag",
 ];
 
 const buttonOptions = [
@@ -63,7 +66,6 @@ const NewArrivals = () => {
 
   const handleAddToCart = (product) => {
     if (!product.items || product.items.length === 0) {
-      console.warn("Producto sin SKUs disponibles");
       return;
     }
 
@@ -71,7 +73,6 @@ const NewArrivals = () => {
     const seller = sku.sellers && sku.sellers[0];
 
     if (!seller || !sku.itemId) {
-      console.warn("No se encontró seller o SKU válido");
       return;
     }
 
@@ -127,7 +128,13 @@ const NewArrivals = () => {
         </h2>
         <div className={handles.booksGrid}>
           {paginatedBooks.map((book) => (
-            <div key={book.id} className={handles.bookCard}>
+            <div
+              key={book.id}
+              className={`${handles.bookCard} ${handles.relative}`}
+            >
+              <div className={handles.tag}>
+                {book?.productClusters?.[activeTab]}
+              </div>
               <img
                 src={book.items?.[0].images?.[0].imageUrl || "/placeholder.svg"}
                 alt={book.productName}
